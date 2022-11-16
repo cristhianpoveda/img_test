@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+
+  <group ns="$(arg veh)">  
+
+    <node pkg="param" type="node.py" name="node" output="screen"/>
+        <rosparam command="load" file="$(find param)/config/default.yaml"/>
+
+  </group>
+
+</launch>

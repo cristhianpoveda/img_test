@@ -1,16 +1,16 @@
 # parameters
-ARG REPO_NAME="<REPO_NAME_HERE>"
-ARG DESCRIPTION="<DESCRIPTION_HERE>"
-ARG MAINTAINER="<YOUR_FULL_NAME> (<YOUR_EMAIL_ADDRESS>)"
+ARG REPO_NAME="img_test"
+ARG DESCRIPTION="c++ test"
+ARG MAINTAINER="Cristhian Daniel Poveda Bravo (cristhianpoveda12@gmail.com)"
 # pick an icon from: https://fontawesome.com/v4.7.0/icons/
 ARG ICON="cube"
 
 # ==================================================>
 # ==> Do not change the code below this line
-ARG ARCH=arm64v8
-ARG DISTRO=ente
+ARG ARCH=arm32v7
+ARG DISTRO=v2
 ARG BASE_TAG=${DISTRO}-${ARCH}
-ARG BASE_IMAGE=dt-ros-commons
+ARG BASE_IMAGE=cpp-pkg
 ARG LAUNCHER=default
 
 # define base image
@@ -47,16 +47,16 @@ ENV DT_REPO_PATH "${REPO_PATH}"
 ENV DT_LAUNCH_PATH "${LAUNCH_PATH}"
 ENV DT_LAUNCHER "${LAUNCHER}"
 
-# install apt dependencies
-COPY ./dependencies-apt.txt "${REPO_PATH}/"
-RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
+# # install apt dependencies
+# COPY ./dependencies-apt.txt "${REPO_PATH}/"
+# RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
 
-# install python3 dependencies
-ARG PIP_INDEX_URL="https://pypi.org/simple"
-ENV PIP_INDEX_URL=${PIP_INDEX_URL}
-RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
-COPY ./dependencies-py3.* "${REPO_PATH}/"
-RUN python3 -m pip install  -r ${REPO_PATH}/dependencies-py3.txt
+# # install python3 dependencies
+# ARG PIP_INDEX_URL="https://pypi.org/simple"
+# ENV PIP_INDEX_URL=${PIP_INDEX_URL}
+# RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
+# COPY ./dependencies-py3.* "${REPO_PATH}/"
+# RUN python3 -m pip install  -r ${REPO_PATH}/dependencies-py3.txt
 
 # copy the source code
 COPY ./packages "${REPO_PATH}/packages"
