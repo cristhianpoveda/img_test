@@ -58,17 +58,55 @@ public:
 
     cv::resize(cv_ptr->image(roi), sqr_img(target_roi), target_roi.size());
 
-    cv::cvtColor(sqr_img, sqr_img, cv::COLOR_BGR2HSV);
 
-    cv::Mat yellow_mask;
+    // PEDESTRIAN
 
-    cv::inRange(sqr_img, cv::Scalar(25, 140, 100), cv::Scalar(45, 255, 255), yellow_mask);
+    cv::Mat yellow_mask, hsv_img;
 
-    ROS_INFO("rows %i", yellow_mask.rows);
-    ROS_INFO("cols %i", yellow_mask.cols);
-    ROS_INFO("ch %i", yellow_mask.channels());
+    cv::cvtColor(sqr_img, hsv_img, cv::COLOR_BGR2HSV);
+
+    cv::inRange(hsv_img, cv::Scalar(28, 38, 37), cv::Scalar(40, 153, 57), yellow_mask);
+
+    std::vector<std::vector<cv::Point> > contours;
+    std::vector<cv::Vec4i> hierarchy;
+
+    cv::findContours(yellow_mask, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+
+    size_t contour_len = sizeof(contours) / sizeof(contours[0]);
+
+    float duckie_area;
+    cv::Point center;
+    std::vector<cv::Point> detections;
+
+    for(size_t i = 0; i < contour_len; i++){
+      duckie_area = cv::contourArea(contours[i]);
+      if(duckie_area > 9){
+        
+        cv::Moments M = cv::moments(contours[i]);
+        if(M.m00 != 0){
+          center.x = int(M.m10 / M.m00);
+          center.y = int(M.m01 / M.m00);
+        }else{
+          center.x = 0;
+          center.y = 0;
+        }
+        ROS_INFO("x: %d", center.x);
+        ROS_INFO("y: %d", center.y);
+        detections.push_back(center);
+        cv::circle( sqr_img, center, 1, cv::Scalar(0,100,100), 3, cv::LINE_AA);
+      }
+
+      size_t detection_len = sizeof(detections) / sizeof(detections[0]);
+      
+    }
+
+    // cv::drawContours( sqr_img, contours, -1, cv::Scalar(0,255,0), cv::FILLED, cv::LINE_8, hierarchy, 1);
+
+    // ROS_INFO("rows %i", yellow_mask.rows);
+    // ROS_INFO("cols %i", yellow_mask.cols);
+    // ROS_INFO("ch %i", yellow_mask.channels());
     
-    sensor_msgs::ImagePtr msg1 = cv_bridge::CvImage(std_msgs::Header(), "mono8", yellow_mask).toImageMsg();
+    sensor_msgs::ImagePtr msg1 = cv_bridge::CvImage(std_msgs::Header(), "bgr8", sqr_img).toImageMsg();
 
     image_pub_.publish(msg1);
     
