@@ -20,8 +20,8 @@ public:
     // Subscrive to input video feed and publish output video feed
     image_sub_ = it_.subscribe("/duckiebot4/camera_node/image", 1,
       &ImageConverter::imageCb, this);
-    image_pub_ = it_.advertise("/image_converter/output_video", 1);
-    image_pub_1 = it_.advertise("/image_converter/mono", 1);
+    image_pub_ = it_.advertise("/led_test/detections", 1);
+    image_pub_1 = it_.advertise("/led_test/mono", 1);
 
   }
 
@@ -67,8 +67,8 @@ public:
 
     cv::cvtColor(sqr_img, hsv_img, cv::COLOR_BGR2HSV);
 
-    cv::inRange(hsv_img, cv::Scalar(20, 100, 100), cv::Scalar(35, 255, 255), yellow_mask);
-
+    cv::inRange(hsv_img, cv::Scalar(90, 0, 240), cv::Scalar(150, 38, 255), yellow_mask);
+    
     std::vector<std::vector<cv::Point> > contours;
     std::vector<cv::Vec4i> hierarchy;
 
@@ -87,13 +87,15 @@ public:
 
       cv::Moments M = cv::moments(hull[i]);
         if(M.m00 != 0){
-          center.x = int(M.m10 / M.m00);
-          center.y = int(M.m01 / M.m00);
-          cv::circle( sqr_img, center, 1, cv::Scalar(255,0,0), 3, cv::LINE_AA);
-          duckies++;
-          ROS_INFO("x: %i", center.x);
-          ROS_INFO("y: %i", center.y);         
+          duckie_area = contourArea(hull[i]);
+          if(1){
+            center.x = int(M.m10 / M.m00);
+            center.y = int(M.m01 / M.m00);
+            //cv::circle( sqr_img, center, 1, cv::Scalar(255,0,0), 3, cv::LINE_AA);
+            duckies++;
+          }          
         }
+
     }
     for(int i = 0; i < contours.size(); i++){
 
@@ -101,7 +103,7 @@ public:
 
     }
 
-    // ROS_INFO("detections: %i", duckies);
+    ROS_INFO("detections: %i", duckies);
     
     sensor_msgs::ImagePtr msg1 = cv_bridge::CvImage(std_msgs::Header(), "bgr8", sqr_img).toImageMsg();
     sensor_msgs::ImagePtr msg2 = cv_bridge::CvImage(std_msgs::Header(), "mono8", yellow_mask).toImageMsg();
@@ -114,7 +116,7 @@ public:
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "testn");
+  ros::init(argc, argv, "led_test");
   ImageConverter ic;
   ROS_INFO("Node started");
   ros::spin();

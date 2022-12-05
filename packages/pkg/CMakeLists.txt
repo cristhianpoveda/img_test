@@ -9,8 +9,6 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
 )
 
-find_package(OpenCV REQUIRED)
-
 catkin_package(
     INCLUDE_DIRS
     CATKIN_DEPENDS
@@ -26,7 +24,7 @@ include_directories(
   ${OpenCV_INCLUDE_DIRS}
 )
 
-add_executable(testn src/main.cpp)
-#set_target_properties(${PROJECT_NAME}_testn PROPERTIES OUTPUT_NAME testn PREFIX "")
-add_dependencies(testn ${${PROJECT_NAME}EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(testn ${catkin_LIBRARIES} ${OpenCV_INCLUDE_DIRS})
+add_executable(led_test src/led.cpp)
+#set_target_properties(${PROJECT_NAME}_led_test PROPERTIES OUTPUT_NAME led_test PREFIX "")
+add_dependencies(led_test ${${PROJECT_NAME}EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(led_test ${catkin_LIBRARIES} ${OpenCV_INCLUDE_DIRS})
