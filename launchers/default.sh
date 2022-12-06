@@ -19,7 +19,8 @@ dt-launchfile-init
 #dt-exec roslaunch path_planning coordinator_node.launch
 #dt-exec roslaunch path_planning stop_finder_node.launch veh:="$VEHICLE_NAME"
 #dt-exec rosrun pkg testn
-dt-exec rosrun pkg led_test 
+#dt-exec rosrun pkg back_test
+dt-exec rosrun pkg decision_node 
 # ----------------------------------------------------------------------------
 # YOUR CODE ABOVE THIS LINE
 

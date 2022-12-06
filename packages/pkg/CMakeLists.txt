@@ -24,7 +24,7 @@ include_directories(
   ${OpenCV_INCLUDE_DIRS}
 )
 
-add_executable(led_test src/led.cpp)
-#set_target_properties(${PROJECT_NAME}_led_test PROPERTIES OUTPUT_NAME led_test PREFIX "")
-add_dependencies(led_test ${${PROJECT_NAME}EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(led_test ${catkin_LIBRARIES} ${OpenCV_INCLUDE_DIRS})
+add_executable(decision_node src/decision_node.cpp)
+#set_target_properties(${PROJECT_NAME}_decision_node PROPERTIES OUTPUT_NAME decision_node PREFIX "")
+add_dependencies(decision_node ${${PROJECT_NAME}EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(decision_node ${catkin_LIBRARIES} ${OpenCV_INCLUDE_DIRS})

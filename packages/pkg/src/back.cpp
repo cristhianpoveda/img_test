@@ -63,16 +63,18 @@ public:
 
     // PEDESTRIAN
 
-    cv::Mat yellow_mask, hsv_img;
+    cv::Mat lower_mask, upper_mask, red_mask, hsv_img;
 
     cv::cvtColor(sqr_img, hsv_img, cv::COLOR_BGR2HSV);
 
-    cv::inRange(hsv_img, cv::Scalar(90, 0, 230), cv::Scalar(155, 38, 255), yellow_mask);
+    cv::inRange(hsv_img, cv::Scalar(0, 0, 230), cv::Scalar(13, 38, 255), lower_mask);
+    cv::inRange(hsv_img, cv::Scalar(160, 0, 230), cv::Scalar(179, 38, 255), upper_mask);
+    cv::bitwise_or(lower_mask, upper_mask, red_mask);
     
     std::vector<std::vector<cv::Point> > contours;
     std::vector<cv::Vec4i> hierarchy;
 
-    cv::findContours(yellow_mask, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    cv::findContours(red_mask, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     float duckie_area;
     cv::Point center;
@@ -81,33 +83,33 @@ public:
 
     int duckies = 0;
 
-    for(int i = 0; i < contours.size(); i++){
-
-      //cv::convexHull(cv::Mat(contours[i]), hull[i], false);
-
-      cv::Moments M = cv::moments(contours[i]);
-        if(M.m00 != 0){
-          duckie_area = contourArea(contours[i]);
-          if(1){
-            center.x = int(M.m10 / M.m00);
-            center.y = int(M.m01 / M.m00);
-            //cv::circle( sqr_img, center, 1, cv::Scalar(255,0,0), 3, cv::LINE_AA);
-            cv::drawContours(sqr_img, contours, i, cv::Scalar(255, 0, 0), 1, 8, std::vector<cv::Vec4i>(), 0, cv::Point());
-            duckies++;
-          }          
-        }
-
-    }
     // for(int i = 0; i < contours.size(); i++){
 
-    //   cv::drawContours(sqr_img, contours, i, cv::Scalar(255, 0, 0), 1, 8, std::vector<cv::Vec4i>(), 0, cv::Point());
+    //   //cv::convexHull(cv::Mat(contours[i]), hull[i], false);
+
+    //   cv::Moments M = cv::moments(contours[i]);
+    //     if(M.m00 != 0){
+    //       duckie_area = contourArea(contours[i]);
+    //       if(1){
+    //         center.x = int(M.m10 / M.m00);
+    //         center.y = int(M.m01 / M.m00);
+    //         //cv::circle( sqr_img, center, 1, cv::Scalar(255,0,0), 3, cv::LINE_AA);
+    //         cv::drawContours(sqr_img, contours, i, cv::Scalar(255, 0, 0), 1, 8, std::vector<cv::Vec4i>(), 0, cv::Point());
+    //         duckies++;
+    //       }          
+    //     }
 
     // }
+    for(int i = 0; i < contours.size(); i++){
 
-    ROS_INFO("detections: %i", duckies);
+      cv::drawContours(sqr_img, contours, i, cv::Scalar(255, 0, 0), 1, 8, std::vector<cv::Vec4i>(), 0, cv::Point());
+
+    }
+
+    ROS_INFO("detections: %i", contours.size());
     
     sensor_msgs::ImagePtr msg1 = cv_bridge::CvImage(std_msgs::Header(), "bgr8", sqr_img).toImageMsg();
-    sensor_msgs::ImagePtr msg2 = cv_bridge::CvImage(std_msgs::Header(), "mono8", yellow_mask).toImageMsg();
+    sensor_msgs::ImagePtr msg2 = cv_bridge::CvImage(std_msgs::Header(), "mono8", red_mask).toImageMsg();
 
     image_pub_.publish(msg1);
     image_pub_1.publish(msg2);
@@ -117,7 +119,7 @@ public:
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "led_test");
+  ros::init(argc, argv, "back_test");
   ImageConverter ic;
   ROS_INFO("Node started");
   ros::spin();
