@@ -20,7 +20,11 @@ dt-launchfile-init
 #dt-exec roslaunch path_planning stop_finder_node.launch veh:="$VEHICLE_NAME"
 #dt-exec rosrun pkg testn
 #dt-exec rosrun pkg back_test
-dt-exec rosrun pkg decision_node 
+#dt-exec rosrun pkg decision_node
+#dt-exec roslaunch detection object_detection_node.launch veh:="$VEHICLE_NAME"
+#dt-exec roslaunch decision_making decision_making_node.launch decision_making_node veh:="$VEHICLE_NAME"
+dt-exec roslaunch navigation stop_sign_detector_node.launch veh:="$VEHICLE_NAME"
+
 # ----------------------------------------------------------------------------
 # YOUR CODE ABOVE THIS LINE
 
